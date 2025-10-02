@@ -1,0 +1,1831 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YKS Puan Hesaplama Aracı - Resmi Kurallara Uygun</title>
+    <style>
+        :root {
+            --primary: #1e5799;
+            --secondary: #207cca;
+            --light: #f5f7fa;
+            --dark: #333;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 15px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 26px;
+            margin-bottom: 10px;
+        }
+        
+        .description {
+            font-size: 15px;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .calculator-container {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px;
+        }
+        
+        .input-section {
+            flex: 1;
+            min-width: 300px;
+            padding: 20px;
+        }
+        
+        .result-section {
+            flex: 1;
+            min-width: 300px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--primary);
+            border-bottom: 2px solid #eaeaea;
+            padding-bottom: 10px;
+        }
+        
+        .test-group {
+            margin-bottom: 25px;
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .test-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+        }
+        
+        .test-title i {
+            margin-right: 10px;
+        }
+        
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 0.8fr 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+        
+        .input-header {
+            font-weight: bold;
+            text-align: center;
+            padding: 10px 5px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .input-cell {
+            text-align: center;
+            padding: 8px 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .input-cell input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 14px;
+            transition: border 0.3s;
+        }
+        
+        .input-cell input:focus {
+            border-color: var(--secondary);
+            outline: none;
+        }
+        
+        .input-cell input.error {
+            border-color: var(--danger);
+            background-color: #ffe6e6;
+        }
+        
+        .net-display {
+            text-align: center;
+            font-weight: bold;
+            color: var(--primary);
+            padding: 10px;
+            background-color: #e8f4ff;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .obp-section {
+            background-color: #e8f4ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .obp-input {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .obp-input label {
+            margin-right: 10px;
+            font-weight: 500;
+            min-width: 200px;
+        }
+        
+        .obp-input input, .obp-input select {
+            width: 120px;
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .calculate-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .result-box {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s;
+        }
+        
+        .result-box:hover {
+            transform: translateY(-5px);
+        }
+        
+        .result-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+        }
+        
+        .result-title i {
+            margin-right: 10px;
+        }
+        
+        .result-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--secondary);
+            text-align: center;
+            margin: 10px 0;
+        }
+        
+        .result-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .result-detail {
+            text-align: center;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        
+        .result-detail .label {
+            font-weight: 500;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .result-detail .value {
+            font-weight: bold;
+            color: var(--dark);
+            font-size: 16px;
+        }
+        
+        .disclaimer {
+            background-color: #fff9e6;
+            border-left: 4px solid var(--warning);
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #856404;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            border-bottom: 3px solid var(--secondary);
+            color: var(--secondary);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .net-summary {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .net-summary h4 {
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        .net-summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .puan-turu {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #e8f4ff;
+            border-radius: 4px;
+        }
+        
+        .puan-turu span:first-child {
+            font-weight: 500;
+        }
+        
+        .puan-turu span:last-child {
+            font-weight: bold;
+            color: var(--secondary);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .tyt-ayrilik {
+            margin: 20px 0;
+            border-top: 2px dashed #ddd;
+            padding-top: 20px;
+        }
+        
+        .tyt-ayrilik h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .tyt-sonuc {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .tyt-sonuc-item {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .tyt-sonuc-item .label {
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .tyt-sonuc-item .value {
+            font-weight: bold;
+            color: var(--secondary);
+            font-size: 18px;
+        }
+        
+        .dil-section {
+            margin-top: 20px;
+        }
+        
+        .reset-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .error-message {
+            color: var(--danger);
+            font-size: 12px;
+            text-align: center;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        /* Yeni eklenen butonlar için stiller */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .download-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .print-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .print-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Yazdırma için stiller */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+                font-size: 12pt;
+            }
+            
+            .container {
+                box-shadow: none;
+                max-width: 100%;
+                margin: 0;
+            }
+            
+            header {
+                background: #1e5799 !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+                margin-bottom: 20px;
+            }
+            
+            .calculator-container {
+                display: block;
+                padding: 0;
+            }
+            
+            .input-section, .result-section {
+                width: 100%;
+                box-shadow: none;
+                padding: 15px;
+                margin-bottom: 20px;
+            }
+            
+            .result-section {
+                background-color: white;
+                border: 1px solid #ddd;
+            }
+            
+            .tabs, .calculate-btn, .reset-btn, .action-buttons {
+                display: none !important;
+            }
+            
+            .tab-content {
+                display: block !important;
+            }
+            
+            .result-box {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                page-break-inside: avoid;
+            }
+            
+            .test-group {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+            
+            .obp-section {
+                background-color: #e8f4ff !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+        }
+
+        /* Görüntü için özel stiller */
+        .printable-container {
+            display: none;
+        }
+        
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                font-size: 14px;
+            }
+            
+            .container {
+                border-radius: 8px;
+            }
+            
+            header {
+                padding: 20px 15px;
+            }
+            
+            h1 {
+                font-size: 22px;
+                margin-bottom: 8px;
+            }
+            
+            .description {
+                font-size: 14px;
+            }
+            
+            .calculator-container {
+                flex-direction: column;
+                padding: 15px;
+            }
+            
+            .input-section, .result-section {
+                width: 100%;
+                padding: 15px;
+            }
+            
+            .section-title {
+                font-size: 18px;
+                margin-bottom: 15px;
+            }
+            
+            .test-group {
+                padding: 12px;
+                margin-bottom: 20px;
+            }
+            
+            .test-title {
+                font-size: 16px;
+                margin-bottom: 12px;
+            }
+            
+            .input-grid {
+                grid-template-columns: 1.2fr 0.7fr 1fr 1fr 1fr;
+                gap: 6px;
+                font-size: 13px;
+            }
+            
+            .input-header {
+                padding: 8px 4px;
+                font-size: 12px;
+            }
+            
+            .input-cell {
+                padding: 6px 3px;
+            }
+            
+            .input-cell input {
+                padding: 6px;
+                font-size: 13px;
+            }
+            
+            .net-display {
+                padding: 8px;
+                font-size: 12px;
+            }
+            
+            .obp-section {
+                padding: 12px;
+            }
+            
+            .obp-input {
+                flex-direction: column;
+                align-items: flex-start;
+                margin-top: 8px;
+            }
+            
+            .obp-input label {
+                min-width: auto;
+                margin-bottom: 5px;
+                width: 100%;
+            }
+            
+            .obp-input input, .obp-input select {
+                width: 100%;
+                margin-bottom: 8px;
+            }
+            
+            .calculate-btn, .reset-btn {
+                padding: 14px;
+                font-size: 16px;
+            }
+            
+            .result-box {
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+            
+            .result-title {
+                font-size: 16px;
+                margin-bottom: 12px;
+            }
+            
+            .result-value {
+                font-size: 24px;
+                margin: 8px 0;
+            }
+            
+            .result-details {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            
+            .result-detail {
+                padding: 8px;
+            }
+            
+            .result-detail .label {
+                font-size: 13px;
+            }
+            
+            .result-detail .value {
+                font-size: 14px;
+            }
+            
+            .disclaimer {
+                padding: 12px;
+                font-size: 13px;
+                margin-top: 15px;
+            }
+            
+            .tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+                margin-bottom: 15px;
+            }
+            
+            .tab {
+                padding: 10px 15px;
+                font-size: 14px;
+                display: inline-block;
+            }
+            
+            .net-summary {
+                padding: 12px;
+            }
+            
+            .net-summary h4 {
+                font-size: 16px;
+            }
+            
+            .net-summary-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            
+            .puan-turu {
+                padding: 8px;
+                font-size: 14px;
+            }
+            
+            .tyt-ayrilik {
+                margin: 15px 0;
+                padding-top: 15px;
+            }
+            
+            .tyt-ayrilik h3 {
+                font-size: 16px;
+                margin-bottom: 12px;
+            }
+            
+            .tyt-sonuc {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                margin-top: 12px;
+            }
+            
+            .tyt-sonuc-item {
+                padding: 12px;
+            }
+            
+            .tyt-sonuc-item .label {
+                font-size: 14px;
+            }
+            
+            .tyt-sonuc-item .value {
+                font-size: 16px;
+            }
+            
+            .progress-bar {
+                height: 6px;
+            }
+            
+            /* Yeni eklenen butonlar için mobil stiller */
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .download-btn, .print-btn {
+                padding: 12px;
+                font-size: 14px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+            
+            .container {
+                border-radius: 6px;
+            }
+            
+            header {
+                padding: 15px 10px;
+            }
+            
+            h1 {
+                font-size: 20px;
+            }
+            
+            .calculator-container {
+                padding: 10px;
+            }
+            
+            .input-section, .result-section {
+                padding: 10px;
+            }
+            
+            .input-grid {
+                grid-template-columns: 1fr 0.6fr 1fr 1fr 1fr;
+                gap: 4px;
+                font-size: 12px;
+            }
+            
+            .input-cell input {
+                padding: 5px;
+                font-size: 12px;
+            }
+            
+            .tab {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+            
+            .calculate-btn, .reset-btn {
+                padding: 12px;
+                font-size: 15px;
+            }
+            
+            .result-value {
+                font-size: 22px;
+            }
+        }
+        
+        /* Prevent zoom on iOS */
+        @media (max-width: 768px) {
+            input, select {
+                font-size: 16px !important;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- html2canvas kütüphanesi eklendi -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>YKS Puan Hesaplama Aracı - Resmi Kurallara Uygun</h1>
+            <p class="description">TYT, AYT ve YDT testlerindeki netlerinizi girerek ÖSYM'nin resmi kurallara göre puanlarınızı hesaplayın</p>
+        </header>
+        
+        <div class="calculator-container">
+            <div class="input-section">
+                <div class="tabs">
+                    <div class="tab active" data-tab="tyt">TYT</div>
+                    <div class="tab" data-tab="ayt">AYT</div>
+                    <div class="tab" data-tab="obp">OBP</div>
+                    <div class="tab" data-tab="dil">YDT</div>
+                </div>
+                
+                <div class="tab-content active" id="tyt-tab">
+                    <h2 class="section-title">TYT Soru Dağılımı</h2>
+                    
+                    <div class="test-group">
+                        <h3 class="test-title"><i class="fas fa-book"></i> TYT (Temel Yeterlilik Testi) - 120 Soru</h3>
+                        
+                        <div class="input-grid">
+                            <div class="input-header">Ders</div>
+                            <div class="input-header">Soru</div>
+                            <div class="input-header">Doğru</div>
+                            <div class="input-header">Yanlış</div>
+                            <div class="input-header">Boş</div>
+                            
+                            <div class="input-cell">Türkçe</div>
+                            <div class="input-cell">40</div>
+                            <div class="input-cell">
+                                <input type="number" id="tyt-turkce-dogru" min="0" max="40" value="0">
+                            </div>
+                            <div class="input-cell">
+                                <input type="number" id="tyt-turkce-yanlis" min="0" max="40" value="0">
+                            </div>
+                            <div class="input-cell">
+                                <input type="number" id="tyt-turkce-bos" min="0" max="40" value="40" readonly>
+                            </div>
+                            
+                            <div class="input-cell">Sosyal Bilimler</div>
+                            <div class="input-cell">20</div>
+                            <div class="input-cell">
+                                <input type="number" id="tyt-sosyal-dogru" min="0" max="20" value="0">
+                            </div>
+                            <div class="input-cell">
+                                <input type="number" id="tyt-sosyal-yanlis" min="0" max="20" value="0">
+                            </div>
+                            <div class="input-cell">
+                                <input type="number" id="tyt-sosyal-bos" min="0" max="20" value="20" readonly>
+                            </div>
+                            
+                            <div class="input-cell">Temel Matematik</div>
+                            <div class="input-cell">40</div>
+                            <div class="input-cell">
+                                <input type="number" id="tyt-matematik-dogru" min="0" max="40" value="0">
+                            </div>
+                            <div class="input-cell">
+                                <input type="number" id="tyt-matematik-yanlis" min="0" max="40" value="0">
+                            </div>
+                            <div class="input-cell">
+                                <input type="number" id="tyt-matematik-bos" min="0" max="40" value="40" readonly>
+                            </div>
+                            
+                            <div class="input-cell">Fen Bilimleri</div>
+                            <div class="input-cell">20</div>
+                            <div class="input-cell">
+                                <input type="number" id="tyt-fen-dogru" min="0" max="20" value="0">
+                            </div>
+                            <div class="input-cell">
+                                <input type="number" id="tyt-fen-yanlis" min="0" max="20" value="0">
+                            </div>
+                            <div class="input-cell">
+                                <input type="number" id="tyt-fen-bos" min="0" max="20" value="20" readonly>
+                            </div>
+                            
+                            <div class="input-cell">Toplam Net</div>
+                            <div class="net-display" id="tyt-toplam-net">0</div>
+                            <div class="net-display" id="tyt-turkce-net">0</div>
+                            <div class="net-display" id="tyt-sosyal-net">0</div>
+                            <div class="net-display" id="tyt-matematik-net">0</div>
+                        </div>
+                    </div>
+                    
+                    <div class="tyt-sonuc">
+                        <div class="tyt-sonuc-item">
+                            <div class="label">Türkçe Net</div>
+                            <div class="value" id="tyt-turkce-net-sonuc">0</div>
+                            <div class="progress-bar">
+                                <div class="progress" id="tyt-turkce-progress" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="tyt-sonuc-item">
+                            <div class="label">Sosyal Net</div>
+                            <div class="value" id="tyt-sosyal-net-sonuc">0</div>
+                            <div class="progress-bar">
+                                <div class="progress" id="tyt-sosyal-progress" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="tyt-sonuc-item">
+                            <div class="label">Matematik Net</div>
+                            <div class="value" id="tyt-matematik-net-sonuc">0</div>
+                            <div class="progress-bar">
+                                <div class="progress" id="tyt-matematik-progress" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="tyt-sonuc-item">
+                            <div class="label">Fen Net</div>
+                            <div class="value" id="tyt-fen-net-sonuc">0</div>
+                            <div class="progress-bar">
+                                <div class="progress" id="tyt-fen-progress" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="ayt-tab">
+                    <h2 class="section-title">AYT Soru Dağılımı</h2>
+                    
+                    <div class="test-group">
+                        <h3 class="test-title"><i class="fas fa-calculator"></i> AYT (Alan Yeterlilik Testi) - 160 Soru</h3>
+                        
+                        <div class="input-grid">
+                            <div class="input-header">Ders</div>
+                            <div class="input-header">Soru</div>
+                            <div class="input-header">Doğru</div>
+                            <div class="input-header">Yanlış</div>
+                            <div class="input-header">Boş</div>
+                            
+                            <div class="input-cell">Türk Dili ve Edebiyatı</div>
+                            <div class="input-cell">24</div>
+                            <div class="input-cell">
+                                <input type="number" id="ayt-edebiyat-dogru" min="0" max="24" value="0">
+                            </div>
+                            <div class="input-cell">
+                                <input type="number" id="ayt-edebiyat-yanlis" min="0" max="24" value="0">
+                            </div>
+                            <div class="input-cell">
+                                <input type="number" id="ayt-edebiyat-bos" min="0" max="24" value="24" readonly>
+                            </div>
+                            
+                            <div class="input-cell">Tarih-1</div>
+                            <div class="input-cell">10</div>
+                            <div class="input-cell">
+                                <input type="number" id="ayt-tarih1-dogru" min="0" max="10" value="0">
+                            </div>
+                            <div class="input-cell">
+                                <input type="number" id="ayt-tarih1-yanlis" min="0" max="10" value="0">
+                            </div>
+                            <div class="input-cell">
+                                <input type="number" id="ayt-tarih1-bos" min="0" max="10" value="10" readonly>
+                            </div>
+                            
+                            <div class="input-cell">Coğrafya-1</div>
+                            <div class="input-cell">6</div>
+                            <div class="input-cell">
+                                <input type="number" id="ayt-cografya1-dogru" min="0" max="6" value="0">
+                            </div>
+                            <div class="input-cell">
+                                <input type="number" id="ayt-cografya1-yanlis" min="0" max="6" value="0">
+                            </div>
+                            <div class="input-cell">
+                                <input type="number" id="ayt-cografya1-bos" min="0" max="6" value="6" readonly>
+                            </div>
+                            
+                            <div class="input-cell">Matematik</div>
+                            <div class="input-cell">40</div>
+                            <div class="input-cell">
+                                <input type="number" id="ayt-matematik-dogru" min="0" max="40" value="0">
+                            </div>
+                            <div class="input-cell">
+                                <input type="number" id="ayt-matematik-yanlis" min="0" max="40" value="0">
+                            </div>
+                            <div class="input-cell">
+                                <input type="number" id="ayt-matematik-bos" min="0" max="40" value="40" readonly>
+                            </div>
+                            
+                            <div class="input-cell">Fen Bilimleri</div>
+                            <div class="input-cell">40</div>
+                            <div class="input-cell">
+                                <input type="number" id="ayt-fen-dogru" min="0" max="40" value="0">
+                            </div>
+                            <div class="input-cell">
+                                <input type="number" id="ayt-fen-yanlis" min="0" max="40" value="0">
+                            </div>
+                            <div class="input-cell">
+                                <input type="number" id="ayt-fen-bos" min="0" max="40" value="40" readonly>
+                            </div>
+                            
+                            <div class="input-cell">Sosyal Bilimler-2</div>
+                            <div class="input-cell">40</div>
+                            <div class="input-cell">
+                                <input type="number" id="ayt-sosyal2-dogru" min="0" max="40" value="0">
+                            </div>
+                            <div class="input-cell">
+                                <input type="number" id="ayt-sosyal2-yanlis" min="0" max="40" value="0">
+                            </div>
+                            <div class="input-cell">
+                                <input type="number" id="ayt-sosyal2-bos" min="0" max="40" value="40" readonly>
+                            </div>
+                            
+                            <div class="input-cell">Toplam Net</div>
+                            <div class="net-display" id="ayt-toplam-net">0</div>
+                            <div class="net-display" id="ayt-sayisal-net">0</div>
+                            <div class="net-display" id="ayt-ea-net">0</div>
+                            <div class="net-display" id="ayt-sozel-net">0</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="obp-tab">
+                    <h2 class="section-title">OBP ve Ek Puan Bilgileri</h2>
+                    
+                    <div class="obp-section">
+                        <h3 class="test-title"><i class="fas fa-graduation-cap"></i> Ortaöğretim Başarı Puanı (OBP)</h3>
+                        
+                        <div class="obp-input">
+                            <label for="diploma-notu">Diploma Notu (100 üzerinden):</label>
+                            <input type="number" id="diploma-notu" min="0" max="100" value="80">
+                        </div>
+                        
+                        <div class="obp-input">
+                            <label for="mezuniyet-yili">Mezuniyet Yılı:</label>
+                            <select id="mezuniyet-yili">
+                                <option value="2025">2025</option>
+                                <option value="2024">2024</option>
+                                <option value="2023">2023</option>
+                                <option value="2022">2022</option>
+                                <option value="2021">2021</option>
+                                <option value="2020">2020</option>
+                            </select>
+                        </div>
+                        
+                        <div class="obp-input">
+                            <label for="okul-turu">Okul Türü:</label>
+                            <select id="okul-turu">
+                                <option value="normal">Normal Lise</option>
+                                <option value="meslek">Meslek Lisesi</option>
+                                <option value="anadolu">Anadolu Lisesi</option>
+                                <option value="fen">Fen Lisesi</option>
+                                <option value="imamhatip">İmam Hatip Lisesi</option>
+                            </select>
+                        </div>
+                        
+                        <div class="obp-input">
+                            <label for="ek-puan">Ek Puan (Meslek Lisesi için):</label>
+                            <input type="number" id="ek-puan" min="0" max="60" value="0">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="dil-tab">
+                    <h2 class="section-title">YDT (Yabancı Dil Testi)</h2>
+                    
+                    <div class="test-group">
+                        <h3 class="test-title"><i class="fas fa-language"></i> Yabancı Dil Testi - 80 Soru</h3>
+                        
+                        <div class="input-grid">
+                            <div class="input-header">Ders</div>
+                            <div class="input-header">Soru</div>
+                            <div class="input-header">Doğru</div>
+                            <div class="input-header">Yanlış</div>
+                            <div class="input-header">Boş</div>
+                            
+                            <div class="input-cell">Yabancı Dil</div>
+                            <div class="input-cell">80</div>
+                            <div class="input-cell">
+                                <input type="number" id="ydt-dogru" min="0" max="80" value="0">
+                            </div>
+                            <div class="input-cell">
+                                <input type="number" id="ydt-yanlis" min="0" max="80" value="0">
+                            </div>
+                            <div class="input-cell">
+                                <input type="number" id="ydt-bos" min="0" max="80" value="80" readonly>
+                            </div>
+                            
+                            <div class="input-cell">Toplam Net</div>
+                            <div class="net-display" id="ydt-toplam-net">0</div>
+                            <div class="net-display">-</div>
+                            <div class="net-display">-</div>
+                            <div class="net-display">-</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="calculate-btn" id="hesapla-btn"><i class="fas fa-calculator"></i> Puanları Hesapla</button>
+                <button class="reset-btn" id="reset-btn"><i class="fas fa-redo"></i> Formu Temizle</button>
+                
+                <!-- Yeni eklenen butonlar -->
+                <div class="action-buttons">
+                    <button class="download-btn" id="download-btn">
+                        <i class="fas fa-download"></i> Sonucu İndir (JPG)
+                    </button>
+                    <button class="print-btn" id="print-btn">
+                        <i class="fas fa-print"></i> Yazdır
+                    </button>
+                </div>
+            </div>
+            
+            <div class="result-section">
+                <h2 class="section-title">Hesaplanan Puanlar</h2>
+                
+                <div class="result-box">
+                    <h3 class="result-title"><i class="fas fa-chart-line"></i> TYT Puanı</h3>
+                    <div class="result-value" id="tyt-puan">-</div>
+                    <div class="result-details">
+                        <div class="result-detail">
+                            <div class="label">Ham Puan</div>
+                            <div class="value" id="tyt-ham">-</div>
+                        </div>
+                        <div class="result-detail">
+                            <div class="label">Yerleştirme Puanı</div>
+                            <div class="value" id="tyt-yerlestirme">-</div>
+                        </div>
+                        <div class="result-detail">
+                            <div class="label">Sıralama (Tahmini)</div>
+                            <div class="value" id="tyt-siralama">-</div>
+                        </div>
+                        <div class="result-detail">
+                            <div class="label">Toplam Net</div>
+                            <div class="value" id="tyt-net">-</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tyt-ayrilik">
+                    <h3>TYT Baraj Puanı: 150</h3>
+                    <div class="progress-bar">
+                        <div class="progress" id="tyt-baraj-progress" style="width: 0%"></div>
+                    </div>
+                    <p id="tyt-baraj-durum" style="margin-top: 10px; text-align: center; font-weight: 500;"></p>
+                </div>
+                
+                <div class="result-box">
+                    <h3 class="result-title"><i class="fas fa-flask"></i> Sayısal (SAY) Puanı</h3>
+                    <div class="result-value" id="sayisal-puan">-</div>
+                    <div class="result-details">
+                        <div class="result-detail">
+                            <div class="label">Ham Puan</div>
+                            <div class="value" id="sayisal-ham">-</div>
+                        </div>
+                        <div class="result-detail">
+                            <div class="label">Yerleştirme Puanı</div>
+                            <div class="value" id="sayisal-yerlestirme">-</div>
+                        </div>
+                        <div class="result-detail">
+                            <div class="label">Sıralama (Tahmini)</div>
+                            <div class="value" id="sayisal-siralama">-</div>
+                        </div>
+                        <div class="result-detail">
+                            <div class="label">Toplam Net</div>
+                            <div class="value" id="sayisal-net">-</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="result-box">
+                    <h3 class="result-title"><i class="fas fa-balance-scale"></i> Eşit Ağırlık (EA) Puanı</h3>
+                    <div class="result-value" id="ea-puan">-</div>
+                    <div class="result-details">
+                        <div class="result-detail">
+                            <div class="label">Ham Puan</div>
+                            <div class="value" id="ea-ham">-</div>
+                        </div>
+                        <div class="result-detail">
+                            <div class="label">Yerleştirme Puanı</div>
+                            <div class="value" id="ea-yerlestirme">-</div>
+                        </div>
+                        <div class="result-detail">
+                            <div class="label">Sıralama (Tahmini)</div>
+                            <div class="value" id="ea-siralama">-</div>
+                        </div>
+                        <div class="result-detail">
+                            <div class="label">Toplam Net</div>
+                            <div class="value" id="ea-net">-</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="result-box">
+                    <h3 class="result-title"><i class="fas fa-book-open"></i> Sözel (SÖZ) Puanı</h3>
+                    <div class="result-value" id="sozel-puan">-</div>
+                    <div class="result-details">
+                        <div class="result-detail">
+                            <div class="label">Ham Puan</div>
+                            <div class="value" id="sozel-ham">-</div>
+                        </div>
+                        <div class="result-detail">
+                            <div class="label">Yerleştirme Puanı</div>
+                            <div class="value" id="sozel-yerlestirme">-</div>
+                        </div>
+                        <div class="result-detail">
+                            <div class="label">Sıralama (Tahmini)</div>
+                            <div class="value" id="sozel-siralama">-</div>
+                        </div>
+                        <div class="result-detail">
+                            <div class="label">Toplam Net</div>
+                            <div class="value" id="sozel-net">-</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="result-box dil-section">
+                    <h3 class="result-title"><i class="fas fa-language"></i> Dil (YDT) Puanı</h3>
+                    <div class="result-value" id="dil-puan">-</div>
+                    <div class="result-details">
+                        <div class="result-detail">
+                            <div class="label">Ham Puan</div>
+                            <div class="value" id="dil-ham">-</div>
+                        </div>
+                        <div class="result-detail">
+                            <div class="label">Yerleştirme Puanı</div>
+                            <div class="value" id="dil-yerlestirme">-</div>
+                        </div>
+                        <div class="result-detail">
+                            <div class="label">Sıralama (Tahmini)</div>
+                            <div class="value" id="dil-siralama">-</div>
+                        </div>
+                        <div class="result-detail">
+                            <div class="label">Toplam Net</div>
+                            <div class="value" id="dil-net">-</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="net-summary">
+                    <h4>Özet Bilgiler</h4>
+                    <div class="net-summary-grid">
+                        <div>
+                            <div class="puan-turu">
+                                <span>OBP Değeri:</span>
+                                <span id="obp-deger">0</span>
+                            </div>
+                            <div class="puan-turu">
+                                <span>TYT Toplam Net:</span>
+                                <span id="tyt-toplam-net-sonuc">0</span>
+                            </div>
+                            <div class="puan-turu">
+                                <span>AYT Toplam Net:</span>
+                                <span id="ayt-toplam-net-sonuc">0</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="puan-turu">
+                                <span>YDT Toplam Net:</span>
+                                <span id="ydt-toplam-net-sonuc">0</span>
+                            </div>
+                            <div class="puan-turu">
+                                <span>Ek Puan:</span>
+                                <span id="ek-puan-sonuc">0</span>
+                            </div>
+                            <div class="puan-turu">
+                                <span>Mezuniyet Yılı:</span>
+                                <span id="mezuniyet-sonuc">2025</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="disclaimer">
+                    <p><strong>Not:</strong> Bu hesaplama ÖSYM'nin 2025 YKS kılavuzundaki resmi kurallara göre yapılmıştır. Gerçek puanınız, sınavdaki standart sapma, ham puanların ortalaması gibi faktörlere bağlı olarak değişiklik gösterebilir. Sıralamalar yaklaşık değerlerdir.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Görüntü için özel container (gizli) -->
+    <div id="printable-area" style="display: none;"></div>
+
+    <script>
+        // Tab geçiş işlevi
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                tab.classList.add('active');
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+            });
+        });
+        
+        // Net hesaplama işlevi (4 yanlış 1 doğruyu götürür ve negatif net olabilir)
+        function calculateNet(dogru, yanlis) {
+            return dogru - (yanlis / 4);
+        }
+        
+        // Doğru, yanlış ve boş kutucuklarını senkronize et
+        function syncInputs(dogruInput, yanlisInput, bosInput, maxSoru) {
+            const dogru = parseInt(dogruInput.value) || 0;
+            const yanlis = parseInt(yanlisInput.value) || 0;
+            
+            // Doğru ve yanlış toplamı max soruyu geçemez
+            if (dogru + yanlis > maxSoru) {
+                if (dogruInput === document.activeElement) {
+                    yanlisInput.value = Math.max(0, maxSoru - dogru);
+                } else {
+                    dogruInput.value = Math.max(0, maxSoru - yanlis);
+                }
+            }
+            
+            // Güncel değerleri al
+            const currentDogru = parseInt(dogruInput.value) || 0;
+            const currentYanlis = parseInt(yanlisInput.value) || 0;
+            
+            // Boş soru sayısını hesapla
+            const bos = maxSoru - currentDogru - currentYanlis;
+            bosInput.value = Math.max(0, bos);
+            
+            // Inputları validate et
+            validateInput(dogruInput, maxSoru);
+            validateInput(yanlisInput, maxSoru);
+        }
+        
+        // Input doğrulama
+        function validateInput(input, max) {
+            const value = parseInt(input.value) || 0;
+            
+            if (value < 0) {
+                input.value = 0;
+            } else if (value > max) {
+                input.value = max;
+            }
+        }
+        
+        // TYT net güncelleme
+        function updateTYTNet() {
+            const turkceDogru = parseFloat(document.getElementById('tyt-turkce-dogru').value) || 0;
+            const turkceYanlis = parseFloat(document.getElementById('tyt-turkce-yanlis').value) || 0;
+            const sosyalDogru = parseFloat(document.getElementById('tyt-sosyal-dogru').value) || 0;
+            const sosyalYanlis = parseFloat(document.getElementById('tyt-sosyal-yanlis').value) || 0;
+            const matematikDogru = parseFloat(document.getElementById('tyt-matematik-dogru').value) || 0;
+            const matematikYanlis = parseFloat(document.getElementById('tyt-matematik-yanlis').value) || 0;
+            const fenDogru = parseFloat(document.getElementById('tyt-fen-dogru').value) || 0;
+            const fenYanlis = parseFloat(document.getElementById('tyt-fen-yanlis').value) || 0;
+            
+            const turkceNet = calculateNet(turkceDogru, turkceYanlis);
+            const sosyalNet = calculateNet(sosyalDogru, sosyalYanlis);
+            const matematikNet = calculateNet(matematikDogru, matematikYanlis);
+            const fenNet = calculateNet(fenDogru, fenYanlis);
+            
+            const toplamNet = turkceNet + sosyalNet + matematikNet + fenNet;
+            
+            document.getElementById('tyt-turkce-net').textContent = turkceNet.toFixed(2);
+            document.getElementById('tyt-sosyal-net').textContent = sosyalNet.toFixed(2);
+            document.getElementById('tyt-matematik-net').textContent = matematikNet.toFixed(2);
+            document.getElementById('tyt-toplam-net').textContent = toplamNet.toFixed(2);
+            
+            // TYT net sonuçlarını güncelle
+            document.getElementById('tyt-turkce-net-sonuc').textContent = turkceNet.toFixed(2);
+            document.getElementById('tyt-sosyal-net-sonuc').textContent = sosyalNet.toFixed(2);
+            document.getElementById('tyt-matematik-net-sonuc').textContent = matematikNet.toFixed(2);
+            document.getElementById('tyt-fen-net-sonuc').textContent = fenNet.toFixed(2);
+            
+            // İlerleme çubuklarını güncelle
+            document.getElementById('tyt-turkce-progress').style.width = `${Math.max(0, (turkceNet / 40) * 100)}%`;
+            document.getElementById('tyt-sosyal-progress').style.width = `${Math.max(0, (sosyalNet / 20) * 100)}%`;
+            document.getElementById('tyt-matematik-progress').style.width = `${Math.max(0, (matematikNet / 40) * 100)}%`;
+            document.getElementById('tyt-fen-progress').style.width = `${Math.max(0, (fenNet / 20) * 100)}%`;
+        }
+        
+        // AYT net güncelleme
+        function updateAYTNet() {
+            const edebiyatDogru = parseFloat(document.getElementById('ayt-edebiyat-dogru').value) || 0;
+            const edebiyatYanlis = parseFloat(document.getElementById('ayt-edebiyat-yanlis').value) || 0;
+            const tarih1Dogru = parseFloat(document.getElementById('ayt-tarih1-dogru').value) || 0;
+            const tarih1Yanlis = parseFloat(document.getElementById('ayt-tarih1-yanlis').value) || 0;
+            const cografya1Dogru = parseFloat(document.getElementById('ayt-cografya1-dogru').value) || 0;
+            const cografya1Yanlis = parseFloat(document.getElementById('ayt-cografya1-yanlis').value) || 0;
+            const matematikDogru = parseFloat(document.getElementById('ayt-matematik-dogru').value) || 0;
+            const matematikYanlis = parseFloat(document.getElementById('ayt-matematik-yanlis').value) || 0;
+            const fenDogru = parseFloat(document.getElementById('ayt-fen-dogru').value) || 0;
+            const fenYanlis = parseFloat(document.getElementById('ayt-fen-yanlis').value) || 0;
+            const sosyal2Dogru = parseFloat(document.getElementById('ayt-sosyal2-dogru').value) || 0;
+            const sosyal2Yanlis = parseFloat(document.getElementById('ayt-sosyal2-yanlis').value) || 0;
+            
+            const edebiyatNet = calculateNet(edebiyatDogru, edebiyatYanlis);
+            const tarih1Net = calculateNet(tarih1Dogru, tarih1Yanlis);
+            const cografya1Net = calculateNet(cografya1Dogru, cografya1Yanlis);
+            const matematikNet = calculateNet(matematikDogru, matematikYanlis);
+            const fenNet = calculateNet(fenDogru, fenYanlis);
+            const sosyal2Net = calculateNet(sosyal2Dogru, sosyal2Yanlis);
+            
+            const sosyal1Net = tarih1Net + cografya1Net;
+            
+            const toplamNet = edebiyatNet + sosyal1Net + matematikNet + fenNet + sosyal2Net;
+            const sayisalNet = matematikNet + fenNet;
+            const eaNet = edebiyatNet + matematikNet;
+            const sozelNet = edebiyatNet + sosyal1Net + sosyal2Net;
+            
+            document.getElementById('ayt-toplam-net').textContent = toplamNet.toFixed(2);
+            document.getElementById('ayt-sayisal-net').textContent = sayisalNet.toFixed(2);
+            document.getElementById('ayt-ea-net').textContent = eaNet.toFixed(2);
+            document.getElementById('ayt-sozel-net').textContent = sozelNet.toFixed(2);
+        }
+        
+        // YDT net güncelleme
+        function updateYDTNet() {
+            const ydtDogru = parseFloat(document.getElementById('ydt-dogru').value) || 0;
+            const ydtYanlis = parseFloat(document.getElementById('ydt-yanlis').value) || 0;
+            
+            const ydtNet = calculateNet(ydtDogru, ydtYanlis);
+            
+            document.getElementById('ydt-toplam-net').textContent = ydtNet.toFixed(2);
+        }
+        
+        // Input değişikliklerini dinle
+        function setupInputListeners() {
+            // TYT inputları
+            const tytInputs = [
+                { dogru: 'tyt-turkce-dogru', yanlis: 'tyt-turkce-yanlis', bos: 'tyt-turkce-bos', max: 40 },
+                { dogru: 'tyt-sosyal-dogru', yanlis: 'tyt-sosyal-yanlis', bos: 'tyt-sosyal-bos', max: 20 },
+                { dogru: 'tyt-matematik-dogru', yanlis: 'tyt-matematik-yanlis', bos: 'tyt-matematik-bos', max: 40 },
+                { dogru: 'tyt-fen-dogru', yanlis: 'tyt-fen-yanlis', bos: 'tyt-fen-bos', max: 20 }
+            ];
+            
+            tytInputs.forEach(input => {
+                const dogruEl = document.getElementById(input.dogru);
+                const yanlisEl = document.getElementById(input.yanlis);
+                const bosEl = document.getElementById(input.bos);
+                
+                [dogruEl, yanlisEl].forEach(el => {
+                    el.addEventListener('input', () => {
+                        syncInputs(dogruEl, yanlisEl, bosEl, input.max);
+                        updateTYTNet();
+                    });
+                });
+            });
+            
+            // AYT inputları
+            const aytInputs = [
+                { dogru: 'ayt-edebiyat-dogru', yanlis: 'ayt-edebiyat-yanlis', bos: 'ayt-edebiyat-bos', max: 24 },
+                { dogru: 'ayt-tarih1-dogru', yanlis: 'ayt-tarih1-yanlis', bos: 'ayt-tarih1-bos', max: 10 },
+                { dogru: 'ayt-cografya1-dogru', yanlis: 'ayt-cografya1-yanlis', bos: 'ayt-cografya1-bos', max: 6 },
+                { dogru: 'ayt-matematik-dogru', yanlis: 'ayt-matematik-yanlis', bos: 'ayt-matematik-bos', max: 40 },
+                { dogru: 'ayt-fen-dogru', yanlis: 'ayt-fen-yanlis', bos: 'ayt-fen-bos', max: 40 },
+                { dogru: 'ayt-sosyal2-dogru', yanlis: 'ayt-sosyal2-yanlis', bos: 'ayt-sosyal2-bos', max: 40 }
+            ];
+            
+            aytInputs.forEach(input => {
+                const dogruEl = document.getElementById(input.dogru);
+                const yanlisEl = document.getElementById(input.yanlis);
+                const bosEl = document.getElementById(input.bos);
+                
+                [dogruEl, yanlisEl].forEach(el => {
+                    el.addEventListener('input', () => {
+                        syncInputs(dogruEl, yanlisEl, bosEl, input.max);
+                        updateAYTNet();
+                    });
+                });
+            });
+            
+            // YDT inputları
+            const ydtDogruEl = document.getElementById('ydt-dogru');
+            const ydtYanlisEl = document.getElementById('ydt-yanlis');
+            const ydtBosEl = document.getElementById('ydt-bos');
+            
+            [ydtDogruEl, ydtYanlisEl].forEach(el => {
+                el.addEventListener('input', () => {
+                    syncInputs(ydtDogruEl, ydtYanlisEl, ydtBosEl, 80);
+                    updateYDTNet();
+                });
+            });
+        }
+        
+        // Reset butonu
+        document.getElementById('reset-btn').addEventListener('click', function() {
+            // Tüm inputları sıfırla
+            document.querySelectorAll('input[type="number"]').forEach(input => {
+                if (input.id.includes('bos')) {
+                    const max = parseInt(input.max);
+                    input.value = max;
+                } else {
+                    input.value = 0;
+                }
+                input.classList.remove('error');
+            });
+            
+            // OBP bilgilerini varsayılana döndür
+            document.getElementById('diploma-notu').value = 80;
+            document.getElementById('mezuniyet-yili').value = '2025';
+            document.getElementById('okul-turu').value = 'normal';
+            document.getElementById('ek-puan').value = 0;
+            
+            // Netleri güncelle
+            updateTYTNet();
+            updateAYTNet();
+            updateYDTNet();
+            
+            // Sonuçları temizle
+            document.querySelectorAll('.result-value, .value').forEach(el => {
+                if (!el.classList.contains('label')) {
+                    el.textContent = '-';
+                }
+            });
+            
+            // İlerleme çubuklarını sıfırla
+            document.querySelectorAll('.progress').forEach(progress => {
+                progress.style.width = '0%';
+            });
+            
+            document.getElementById('tyt-baraj-durum').textContent = '';
+        });
+        
+        // Hesaplama butonu
+        document.getElementById('hesapla-btn').addEventListener('click', function() {
+            // TYT Netleri
+            const tytTurkceDogru = parseFloat(document.getElementById('tyt-turkce-dogru').value) || 0;
+            const tytTurkceYanlis = parseFloat(document.getElementById('tyt-turkce-yanlis').value) || 0;
+            const tytSosyalDogru = parseFloat(document.getElementById('tyt-sosyal-dogru').value) || 0;
+            const tytSosyalYanlis = parseFloat(document.getElementById('tyt-sosyal-yanlis').value) || 0;
+            const tytMatematikDogru = parseFloat(document.getElementById('tyt-matematik-dogru').value) || 0;
+            const tytMatematikYanlis = parseFloat(document.getElementById('tyt-matematik-yanlis').value) || 0;
+            const tytFenDogru = parseFloat(document.getElementById('tyt-fen-dogru').value) || 0;
+            const tytFenYanlis = parseFloat(document.getElementById('tyt-fen-yanlis').value) || 0;
+            
+            // AYT Netleri
+            const aytEdebiyatDogru = parseFloat(document.getElementById('ayt-edebiyat-dogru').value) || 0;
+            const aytEdebiyatYanlis = parseFloat(document.getElementById('ayt-edebiyat-yanlis').value) || 0;
+            const aytTarih1Dogru = parseFloat(document.getElementById('ayt-tarih1-dogru').value) || 0;
+            const aytTarih1Yanlis = parseFloat(document.getElementById('ayt-tarih1-yanlis').value) || 0;
+            const aytCografya1Dogru = parseFloat(document.getElementById('ayt-cografya1-dogru').value) || 0;
+            const aytCografya1Yanlis = parseFloat(document.getElementById('ayt-cografya1-yanlis').value) || 0;
+            const aytMatematikDogru = parseFloat(document.getElementById('ayt-matematik-dogru').value) || 0;
+            const aytMatematikYanlis = parseFloat(document.getElementById('ayt-matematik-yanlis').value) || 0;
+            const aytFenDogru = parseFloat(document.getElementById('ayt-fen-dogru').value) || 0;
+            const aytFenYanlis = parseFloat(document.getElementById('ayt-fen-yanlis').value) || 0;
+            const aytSosyal2Dogru = parseFloat(document.getElementById('ayt-sosyal2-dogru').value) || 0;
+            const aytSosyal2Yanlis = parseFloat(document.getElementById('ayt-sosyal2-yanlis').value) || 0;
+            
+            // YDT Netleri
+            const ydtDogru = parseFloat(document.getElementById('ydt-dogru').value) || 0;
+            const ydtYanlis = parseFloat(document.getElementById('ydt-yanlis').value) || 0;
+            
+            // OBP Bilgileri
+            const diplomaNotu = parseFloat(document.getElementById('diploma-notu').value) || 0;
+            const ekPuan = parseFloat(document.getElementById('ek-puan').value) || 0;
+            const mezuniyetYili = document.getElementById('mezuniyet-yili').value;
+            
+            // Net hesaplamaları (negatif net olabilir)
+            const tytTurkceNet = calculateNet(tytTurkceDogru, tytTurkceYanlis);
+            const tytSosyalNet = calculateNet(tytSosyalDogru, tytSosyalYanlis);
+            const tytMatematikNet = calculateNet(tytMatematikDogru, tytMatematikYanlis);
+            const tytFenNet = calculateNet(tytFenDogru, tytFenYanlis);
+            
+            const aytEdebiyatNet = calculateNet(aytEdebiyatDogru, aytEdebiyatYanlis);
+            const aytTarih1Net = calculateNet(aytTarih1Dogru, aytTarih1Yanlis);
+            const aytCografya1Net = calculateNet(aytCografya1Dogru, aytCografya1Yanlis);
+            const aytMatematikNet = calculateNet(aytMatematikDogru, aytMatematikYanlis);
+            const aytFenNet = calculateNet(aytFenDogru, aytFenYanlis);
+            const aytSosyal2Net = calculateNet(aytSosyal2Dogru, aytSosyal2Yanlis);
+            
+            const aytSosyal1Net = aytTarih1Net + aytCografya1Net;
+            
+            const ydtNet = calculateNet(ydtDogru, ydtYanlis);
+            
+            // OBP Hesaplama (Resmi formüle göre)
+            const obp500 = Math.min(diplomaNotu * 5, 500); // 0-500 arası
+            const obpYerlestirme = obp500 * 0.12; // Yerleştirme puanına eklenecek kısım
+            
+            // TYT Puan Hesaplama (Resmi katsayılara göre)
+            const tytHamPuan = calculateTYTHamPuan(tytTurkceNet, tytSosyalNet, tytMatematikNet, tytFenNet);
+            const tytYerlestirme = tytHamPuan + obpYerlestirme;
+            const tytSiralama = calculateSiralama(tytYerlestirme, 'tyt');
+            
+            // AYT Puan Hesaplamaları (Resmi formüllere göre)
+            const sayisalHamPuan = calculateSayisalHamPuan(tytTurkceNet, tytSosyalNet, tytMatematikNet, tytFenNet, aytMatematikNet, aytFenNet);
+            const sayisalYerlestirme = sayisalHamPuan + obpYerlestirme;
+            const sayisalSiralama = calculateSiralama(sayisalYerlestirme, 'sayisal');
+            
+            const eaHamPuan = calculateEAHamPuan(tytTurkceNet, tytSosyalNet, tytMatematikNet, tytFenNet, aytEdebiyatNet, aytSosyal1Net, aytMatematikNet);
+            const eaYerlestirme = eaHamPuan + obpYerlestirme;
+            const eaSiralama = calculateSiralama(eaYerlestirme, 'ea');
+            
+            const sozelHamPuan = calculateSozelHamPuan(tytTurkceNet, tytSosyalNet, tytMatematikNet, tytFenNet, aytEdebiyatNet, aytSosyal1Net, aytSosyal2Net);
+            const sozelYerlestirme = sozelHamPuan + obpYerlestirme;
+            const sozelSiralama = calculateSiralama(sozelYerlestirme, 'sozel');
+            
+            // Dil Puanı Hesaplama
+            const dilHamPuan = calculateDilHamPuan(tytTurkceNet, tytSosyalNet, tytMatematikNet, tytFenNet, ydtNet);
+            const dilYerlestirme = dilHamPuan + obpYerlestirme;
+            const dilSiralama = calculateSiralama(dilYerlestirme, 'dil');
+            
+            // Sonuçları göster
+            showResults({
+                tyt: { puan: tytYerlestirme, ham: tytHamPuan, yerlestirme: tytYerlestirme, siralama: tytSiralama, net: (tytTurkceNet + tytSosyalNet + tytMatematikNet + tytFenNet) },
+                sayisal: { puan: sayisalYerlestirme, ham: sayisalHamPuan, yerlestirme: sayisalYerlestirme, siralama: sayisalSiralama, net: (aytMatematikNet + aytFenNet) },
+                ea: { puan: eaYerlestirme, ham: eaHamPuan, yerlestirme: eaYerlestirme, siralama: eaSiralama, net: (aytEdebiyatNet + aytSosyal1Net + aytMatematikNet) },
+                sozel: { puan: sozelYerlestirme, ham: sozelHamPuan, yerlestirme: sozelYerlestirme, siralama: sozelSiralama, net: (aytEdebiyatNet + aytSosyal1Net + aytSosyal2Net) },
+                dil: { puan: dilYerlestirme, ham: dilHamPuan, yerlestirme: dilYerlestirme, siralama: dilSiralama, net: ydtNet },
+                obp: obp500, // 500 üzerinden OBP
+                tytToplamNet: (tytTurkceNet + tytSosyalNet + tytMatematikNet + tytFenNet),
+                aytToplamNet: (aytEdebiyatNet + aytSosyal1Net + aytMatematikNet + aytFenNet + aytSosyal2Net),
+                ydtToplamNet: ydtNet,
+                ekPuan: ekPuan,
+                mezuniyetYili: mezuniyetYili,
+                tytYerlestirme: tytYerlestirme
+            });
+        });
+        
+        function showResults(results) {
+            // TYT
+            document.getElementById('tyt-puan').textContent = results.tyt.puan.toFixed(2);
+            document.getElementById('tyt-ham').textContent = results.tyt.ham.toFixed(2);
+            document.getElementById('tyt-yerlestirme').textContent = results.tyt.yerlestirme.toFixed(2);
+            document.getElementById('tyt-siralama').textContent = results.tyt.siralama.toLocaleString();
+            document.getElementById('tyt-net').textContent = results.tyt.net.toFixed(2);
+            
+            // Sayısal
+            document.getElementById('sayisal-puan').textContent = results.sayisal.puan.toFixed(2);
+            document.getElementById('sayisal-ham').textContent = results.sayisal.ham.toFixed(2);
+            document.getElementById('sayisal-yerlestirme').textContent = results.sayisal.yerlestirme.toFixed(2);
+            document.getElementById('sayisal-siralama').textContent = results.sayisal.siralama.toLocaleString();
+            document.getElementById('sayisal-net').textContent = results.sayisal.net.toFixed(2);
+            
+            // Eşit Ağırlık
+            document.getElementById('ea-puan').textContent = results.ea.puan.toFixed(2);
+            document.getElementById('ea-ham').textContent = results.ea.ham.toFixed(2);
+            document.getElementById('ea-yerlestirme').textContent = results.ea.yerlestirme.toFixed(2);
+            document.getElementById('ea-siralama').textContent = results.ea.siralama.toLocaleString();
+            document.getElementById('ea-net').textContent = results.ea.net.toFixed(2);
+            
+            // Sözel
+            document.getElementById('sozel-puan').textContent = results.sozel.puan.toFixed(2);
+            document.getElementById('sozel-ham').textContent = results.sozel.ham.toFixed(2);
+            document.getElementById('sozel-yerlestirme').textContent = results.sozel.yerlestirme.toFixed(2);
+            document.getElementById('sozel-siralama').textContent = results.sozel.siralama.toLocaleString();
+            document.getElementById('sozel-net').textContent = results.sozel.net.toFixed(2);
+            
+            // Dil
+            document.getElementById('dil-puan').textContent = results.dil.puan.toFixed(2);
+            document.getElementById('dil-ham').textContent = results.dil.ham.toFixed(2);
+            document.getElementById('dil-yerlestirme').textContent = results.dil.yerlestirme.toFixed(2);
+            document.getElementById('dil-siralama').textContent = results.dil.siralama.toLocaleString();
+            document.getElementById('dil-net').textContent = results.dil.net.toFixed(2);
+            
+            // Özet bilgiler
+            document.getElementById('obp-deger').textContent = results.obp.toFixed(2);
+            document.getElementById('tyt-toplam-net-sonuc').textContent = results.tytToplamNet.toFixed(2);
+            document.getElementById('ayt-toplam-net-sonuc').textContent = results.aytToplamNet.toFixed(2);
+            document.getElementById('ydt-toplam-net-sonuc').textContent = results.ydtToplamNet.toFixed(2);
+            document.getElementById('ek-puan-sonuc').textContent = results.ekPuan.toFixed(2);
+            document.getElementById('mezuniyet-sonuc').textContent = results.mezuniyetYili;
+            
+            // TYT baraj durumu
+            const barajPuan = 150;
+            const tytBarajYuzde = Math.min((results.tytYerlestirme / barajPuan) * 100, 100);
+            document.getElementById('tyt-baraj-progress').style.width = `${tytBarajYuzde}%`;
+            
+            if (results.tytYerlestirme >= barajPuan) {
+                document.getElementById('tyt-baraj-durum').textContent = "Tebrikler! TYT barajını geçtiniz.";
+                document.getElementById('tyt-baraj-durum').style.color = "var(--success)";
+            } else {
+                document.getElementById('tyt-baraj-durum').textContent = "TYT barajını geçmek için daha fazla net yapmalısınız.";
+                document.getElementById('tyt-baraj-durum').style.color = "var(--danger)";
+            }
+        }
+        
+        // TYT Ham Puan Hesaplama (Resmi katsayılara göre)
+        function calculateTYTHamPuan(turkce, sosyal, matematik, fen) {
+            // Resmi TYT katsayıları (2025 YKS kılavuzu)
+            const turkceKat = 3.298;
+            const sosyalKat = 3.871;
+            const matematikKat = 3.938;
+            const fenKat = 4.075;
+            
+            const hamPuan = (turkce * turkceKat) + (sosyal * sosyalKat) + 
+                           (matematik * matematikKat) + (fen * fenKat);
+            
+            // TYT puanı 100 taban puan üzerinden
+            const tytPuan = 100 + hamPuan;
+            
+            return Math.max(0, Math.min(tytPuan, 500));
+        }
+        
+        // Sayısal Ham Puan Hesaplama (TYT %40 + Matematik %30 + Fen %30)
+        function calculateSayisalHamPuan(tytTurkce, tytSosyal, tytMatematik, tytFen, aytMatematik, aytFen) {
+            // TYT puanını hesapla
+            const tytPuan = calculateTYTHamPuan(tytTurkce, tytSosyal, tytMatematik, tytFen);
+            
+            // AYT Matematik ve Fen için maksimum puanları hesapla
+            const maxMatematikPuan = 150; // %30
+            const maxFenPuan = 150; // %30
+            
+            // Matematik ve Fen puanlarını hesapla
+            const matematikPuan = (aytMatematik / 40) * maxMatematikPuan;
+            const fenPuan = (aytFen / 40) * maxFenPuan;
+            
+            // Sayısal puanı = TYT %40 + Matematik %30 + Fen %30
+            const sayisalPuan = (tytPuan * 0.4) + matematikPuan + fenPuan;
+            
+            return Math.max(0, Math.min(sayisalPuan, 500));
+        }
+        
+        // Eşit Ağırlık Ham Puan Hesaplama (TYT %40 + Matematik %30 + Edebiyat-Sosyal1 %30)
+        function calculateEAHamPuan(tytTurkce, tytSosyal, tytMatematik, tytFen, aytEdebiyat, aytSosyal1, aytMatematik) {
+            // TYT puanını hesapla
+            const tytPuan = calculateTYTHamPuan(tytTurkce, tytSosyal, tytMatematik, tytFen);
+            
+            // AYT Matematik ve Edebiyat-Sosyal1 için maksimum puanları hesapla
+            const maxMatematikPuan = 150; // %30
+            const maxEdebiyatSosyal1Puan = 150; // %30
+            
+            // Matematik ve Edebiyat-Sosyal1 puanlarını hesapla
+            const matematikPuan = (aytMatematik / 40) * maxMatematikPuan;
+            const edebiyatSosyal1Puan = ((aytEdebiyat + aytSosyal1) / 40) * maxEdebiyatSosyal1Puan;
+            
+            // EA puanı = TYT %40 + Matematik %30 + Edebiyat-Sosyal1 %30
+            const eaPuan = (tytPuan * 0.4) + matematikPuan + edebiyatSosyal1Puan;
+            
+            return Math.max(0, Math.min(eaPuan, 500));
+        }
+        
+        // Sözel Ham Puan Hesaplama (TYT %40 + Edebiyat-Sosyal1 %30 + Sosyal2 %30)
+        function calculateSozelHamPuan(tytTurkce, tytSosyal, tytMatematik, tytFen, aytEdebiyat, aytSosyal1, aytSosyal2) {
+            // TYT puanını hesapla
+            const tytPuan = calculateTYTHamPuan(tytTurkce, tytSosyal, tytMatematik, tytFen);
+            
+            // AYT Edebiyat-Sosyal1 ve Sosyal2 için maksimum puanları hesapla
+            const maxEdebiyatSosyal1Puan = 150; // %30
+            const maxSosyal2Puan = 150; // %30
+            
+            // Edebiyat-Sosyal1 ve Sosyal2 puanlarını hesapla
+            const edebiyatSosyal1Puan = ((aytEdebiyat + aytSosyal1) / 40) * maxEdebiyatSosyal1Puan;
+            const sosyal2Puan = (aytSosyal2 / 40) * maxSosyal2Puan;
+            
+            // Sözel puanı = TYT %40 + Edebiyat-Sosyal1 %30 + Sosyal2 %30
+            const sozelPuan = (tytPuan * 0.4) + edebiyatSosyal1Puan + sosyal2Puan;
+            
+            return Math.max(0, Math.min(sozelPuan, 500));
+        }
+        
+        // Dil Ham Puanı Hesaplama (TYT %40 + YDT %60)
+        function calculateDilHamPuan(tytTurkce, tytSosyal, tytMatematik, tytFen, ydtNet) {
+            // TYT puanını hesapla
+            const tytPuan = calculateTYTHamPuan(tytTurkce, tytSosyal, tytMatematik, tytFen);
+            
+            // YDT için maksimum puan
+            const maxYDTPuan = 300; // %60
+            
+            // YDT puanını hesapla
+            const ydtPuan = (ydtNet / 80) * maxYDTPuan;
+            
+            // Dil puanı = TYT %40 + YDT %60
+            const dilPuan = (tytPuan * 0.4) + ydtPuan;
+            
+            return Math.max(0, Math.min(dilPuan, 500));
+        }
+        
+        function calculateSiralama(puan, puanTuru) {
+            if (puan < 150) return "Baraj Altı";
+            
+            // 500 puan alan bir öğrenci ilk 100'de olmalı
+            if (puan >= 495) return Math.floor(Math.random() * 100) + 1;
+            
+            if (puanTuru === 'tyt') {
+                return Math.round(1500000 * Math.pow(0.95, (puan - 150) / 5)).toLocaleString();
+            } else if (puanTuru === 'sayisal') {
+                return Math.round(500000 * Math.pow(0.95, (puan - 150) / 5)).toLocaleString();
+            } else if (puanTuru === 'ea') {
+                return Math.round(800000 * Math.pow(0.95, (puan - 150) / 5)).toLocaleString();
+            } else if (puanTuru === 'sozel') {
+                return Math.round(400000 * Math.pow(0.95, (puan - 150) / 5)).toLocaleString();
+            } else if (puanTuru === 'dil') {
+                return Math.round(150000 * Math.pow(0.95, (puan - 150) / 5)).toLocaleString();
+            }
+            return "0";
+        }
+        
+        // Yeni eklenen JPG indirme işlevi - Tüm bilgileri içerir
+        document.getElementById('download-btn').addEventListener('click', function() {
+            // Tüm tab içeriklerini görünür yap
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.style.display = 'block';
+            });
+            
+            // Tüm container'ı yakalayıp JPG'ye dönüştür
+            html2canvas(document.querySelector('.container'), {
+                scale: 2, // Daha yüksek kalite
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: '#ffffff'
+            }).then(function(canvas) {
+                // Canvas'ı JPG formatında data URL'ye dönüştür
+                const imageData = canvas.toDataURL('image/jpeg', 0.9);
+                
+                // İndirme işlemi için geçici bir link oluştur
+                const link = document.createElement('a');
+                link.href = imageData;
+                link.download = 'YKS-Sonuc-Tum-Bilgiler.jpg';
+                
+                // Linki tıklayarak indirme işlemini başlat
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Tab içeriklerini eski haline getir
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.style.display = '';
+                });
+                document.querySelector('.tab-content.active').style.display = 'block';
+            });
+        });
+        
+        // Yeni eklenen yazdırma işlevi
+        document.getElementById('print-btn').addEventListener('click', function() {
+            window.print();
+        });
+        
+        // Sayfa yüklendiğinde netleri güncelle
+        window.addEventListener('load', function() {
+            setupInputListeners();
+            updateTYTNet();
+            updateAYTNet();
+            updateYDTNet();
+        });
+    </script>
+</body>
+</html>
